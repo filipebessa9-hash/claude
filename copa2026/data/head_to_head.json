@@ -1,0 +1,24 @@
+{
+  "_meta": "Retrospecto historico de confrontos diretos. team_a/team_b com vitorias, empates. Pares ausentes sao tratados como neutros (sem ajuste).",
+  "confrontos": [
+    {"team_a": "Argentina", "team_b": "Brazil",      "a_wins": 41, "draws": 26, "b_wins": 43},
+    {"team_a": "Argentina", "team_b": "Germany",     "a_wins": 9,  "draws": 6,  "b_wins": 7},
+    {"team_a": "Argentina", "team_b": "Netherlands", "a_wins": 4,  "draws": 4,  "b_wins": 1},
+    {"team_a": "Brazil",    "team_b": "France",      "a_wins": 1,  "draws": 3,  "b_wins": 3},
+    {"team_a": "Brazil",    "team_b": "Croatia",     "a_wins": 3,  "draws": 1,  "b_wins": 1},
+    {"team_a": "France",    "team_b": "Germany",     "a_wins": 14, "draws": 8,  "b_wins": 9},
+    {"team_a": "France",    "team_b": "England",     "a_wins": 11, "draws": 5,  "b_wins": 17},
+    {"team_a": "Spain",     "team_b": "Germany",     "a_wins": 9,  "draws": 8,  "b_wins": 8},
+    {"team_a": "Spain",     "team_b": "Portugal",    "a_wins": 16, "draws": 12, "b_wins": 6},
+    {"team_a": "Portugal",  "team_b": "France",      "a_wins": 6,  "draws": 2,  "b_wins": 19},
+    {"team_a": "England",   "team_b": "Germany",     "a_wins": 13, "draws": 6,  "b_wins": 16},
+    {"team_a": "Netherlands","team_b": "Germany",    "a_wins": 11, "draws": 16, "b_wins": 16},
+    {"team_a": "Uruguay",   "team_b": "Brazil",      "a_wins": 20, "draws": 21, "b_wins": 39},
+    {"team_a": "Uruguay",   "team_b": "Argentina",   "a_wins": 58, "draws": 47, "b_wins": 92},
+    {"team_a": "Mexico",    "team_b": "USA",         "a_wins": 36, "draws": 15, "b_wins": 23},
+    {"team_a": "Morocco",   "team_b": "Spain",       "a_wins": 1,  "draws": 2,  "b_wins": 1},
+    {"team_a": "Morocco",   "team_b": "Portugal",    "a_wins": 2,  "draws": 0,  "b_wins": 2},
+    {"team_a": "Japan",     "team_b": "Germany",     "a_wins": 1,  "draws": 0,  "b_wins": 2},
+    {"team_a": "Croatia",   "team_b": "Argentina",   "a_wins": 1,  "draws": 0,  "b_wins": 3}
+  ]
+}
