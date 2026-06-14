@@ -23,6 +23,9 @@ python3 main.py
 # Gera o RELATÓRIO COMPLETO da fase de grupos (RELATORIO_FASE_GRUPOS.md)
 python3 gerar_relatorio.py
 
+# Gera o RELATÓRIO COMPLETO do mata-mata (RELATORIO_MATA_MATA.md)
+python3 gerar_relatorio_mata_mata.py
+
 # Mais simulações / mais iterações de calibração (mais preciso, mais lento)
 python3 main.py --sims 50000 --iters 8000
 
@@ -36,9 +39,13 @@ python3 main.py --no-calibrate --predict "Brazil|France"
 python3 -m tests.test_model
 ```
 
-> 📄 **O relatório da fase de grupos fica em [`RELATORIO_FASE_GRUPOS.md`](RELATORIO_FASE_GRUPOS.md)** —
-> previsão de cada jogo, classificação projetada por grupo, disputa pelos
-> melhores terceiros e os 32 classificados ao mata-mata.
+> 📄 **Relatórios gerados:**
+> - [`RELATORIO_FASE_GRUPOS.md`](RELATORIO_FASE_GRUPOS.md) — previsão de cada
+>   jogo, classificação projetada por grupo, melhores terceiros e os 32
+>   classificados ao mata-mata.
+> - [`RELATORIO_MATA_MATA.md`](RELATORIO_MATA_MATA.md) — **chaveamento oficial**
+>   (partidas 73–104), caminho mais provável rodada a rodada até a final e a
+>   probabilidade de cada seleção alcançar cada fase.
 
 ## Fatores considerados (pedidos no enunciado)
 
@@ -112,8 +119,10 @@ FIFA puro, que é em boa parte redundante com os demais fatores).
 ```
 copa2026/
 ├── main.py                      # orquestra validação + calibração + predição
-├── gerar_relatorio.py           # gera o relatório Markdown da fase de grupos
-├── RELATORIO_FASE_GRUPOS.md     # relatório gerado (saída)
+├── gerar_relatorio.py           # gera o relatório da fase de grupos
+├── gerar_relatorio_mata_mata.py # gera o relatório do mata-mata
+├── RELATORIO_FASE_GRUPOS.md     # relatório gerado (fase de grupos)
+├── RELATORIO_MATA_MATA.md       # relatório gerado (mata-mata)
 ├── data/
 │   ├── teams_2026.json          # 48 seleções, grupos e fatores
 │   ├── head_to_head.json        # confrontos diretos históricos
@@ -126,6 +135,7 @@ copa2026/
 │   ├── backtest.py              # métricas de acurácia (multi-competição)
 │   ├── calibrate.py             # calibração + validação cruzada
 │   ├── simulate.py              # Monte Carlo do torneio
+│   ├── knockout.py              # chaveamento oficial do mata-mata
 │   └── data_loader.py           # carga das bases
 └── tests/test_model.py          # testes
 ```

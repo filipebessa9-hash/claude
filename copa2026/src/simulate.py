@@ -11,7 +11,7 @@ entre os classificados). E uma aproximacao, documentada no README.
 import math
 import random
 
-from . import model, ratings
+from . import knockout, model, ratings
 
 
 def _poisson_sample(lmbda, rng):
@@ -58,6 +58,22 @@ class Tournament:
         diff = (self.strength[a] - self.strength[b]) / 100.0
         p_a = min(0.85, max(0.15, 0.5 + 0.5 * diff))
         return a if self.rng.random() < p_a else b
+
+    def decide_random(self, a, b):
+        """Callback de mata-mata para Monte Carlo (sorteia o vencedor)."""
+        return self.knockout_winner(a, b), None
+
+    def decide_ml(self, a, b):
+        """Callback deterministico: escolhe o lado mais provavel de avancar."""
+        lam_a, lam_b = self._lambdas(a, b)
+        pa, pd, pb, score = model.outcome_probabilities(lam_a, lam_b)
+        tb = min(0.85, max(0.15, 0.5 + 0.5 * (self.strength[a] - self.strength[b]) / 100.0))
+        p_a_adv = pa + pd * tb
+        p_b_adv = pb + pd * (1 - tb)
+        winner = a if p_a_adv >= p_b_adv else b
+        info = {"p_winner": max(p_a_adv, p_b_adv), "score": score,
+                "pa": pa, "pd": pd, "pb": pb, "p_a_adv": p_a_adv}
+        return winner, info
 
     # ---- fases ----------------------------------------------------------
     def group_stage(self, groups):
@@ -168,6 +184,59 @@ def group_match_predictions(teams, params, h2h_table, groups):
                               "score": score})
         out[g] = jogos
     return out
+
+
+def _deterministic_qualifiers(teams, params, h2h_table, groups):
+    """Classificacao projetada (deterministica): ranked por grupo + 8 terceiros."""
+    tbl = expected_group_table(teams, params, h2h_table, groups)
+    ranked = {g: [t for t, _ in tbl[g]] for g in tbl}
+    thirds = sorted(((g, tbl[g][2][0], tbl[g][2][1]) for g in tbl),
+                    key=lambda x: x[2], reverse=True)
+    best_thirds = [t for _, t, _ in thirds[:8]]
+    return ranked, best_thirds
+
+
+def deterministic_bracket(teams, params, h2h_table, groups):
+    """Bracket OFICIAL preenchido com o cenario mais provavel de cada jogo.
+
+    Retorna (results, champion, runner_up, r32_teams)."""
+    tour = Tournament(teams, params, h2h_table)
+    ranked, best_thirds = _deterministic_qualifiers(teams, params, h2h_table, groups)
+    group_of = lambda t: teams[t]["group"]  # noqa: E731
+    r32 = knockout.resolve_r32(ranked, best_thirds, group_of)
+    _, results, champ, runner = knockout.play(r32, tour.decide_ml)
+    return results, champ, runner, r32
+
+
+def monte_carlo_bracket(teams, params, h2h_table, groups, n_sims=20000, seed=11):
+    """Monte Carlo pelo chaveamento OFICIAL. Probabilidades por rodada."""
+    reach = {r: {} for r in ["r16", "qf", "sf", "final", "champion"]}
+    group_of = lambda t: teams[t]["group"]  # noqa: E731
+    base = random.Random(seed)
+    for _ in range(n_sims):
+        tour = Tournament(teams, params, h2h_table, seed=base.randrange(1 << 30))
+        gs = tour.group_stage(groups)
+        r32 = knockout.resolve_r32(gs["ranked"], gs["best_thirds"], group_of)
+        winners, _, champ, _ = knockout.play(r32, tour.decide_random)
+
+        for mid in (m[0] for m in knockout.R32):
+            t = winners[mid]
+            reach["r16"][t] = reach["r16"].get(t, 0) + 1
+        for mid, _, _ in knockout.R16:
+            t = winners[mid]
+            reach["qf"][t] = reach["qf"].get(t, 0) + 1
+        for mid, _, _ in knockout.QF:
+            t = winners[mid]
+            reach["sf"][t] = reach["sf"].get(t, 0) + 1
+        for mid, _, _ in knockout.SF:
+            t = winners[mid]
+            reach["final"][t] = reach["final"].get(t, 0) + 1
+        reach["champion"][champ] = reach["champion"].get(champ, 0) + 1
+
+    def pct(d):
+        return {t: 100.0 * c / n_sims for t, c in d.items()}
+
+    return {r: pct(reach[r]) for r in reach}
 
 
 def monte_carlo(teams, params, h2h_table, groups, n_sims=20000, seed=7):
