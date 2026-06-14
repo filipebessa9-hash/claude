@@ -1,5 +1,6 @@
 {
   "_meta": "Conjunto de validacao: 39 jogos reais da Copa do Mundo 2022 (Catar) com ratings pre-torneio. Usado para medir e calibrar a acuracia do algoritmo. Placares de jogos decididos nos penaltis sao registrados como o resultado do tempo normal/prorrogacao (empate).",
+  "host": "Qatar",
   "ratings": {
     "Brazil":       {"points": 1841, "squad": 90, "coach": 80, "form": 85, "tactical": 83},
     "Argentina":    {"points": 1773, "squad": 88, "coach": 85, "form": 88, "tactical": 86},

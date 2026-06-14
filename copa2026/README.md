@@ -20,6 +20,9 @@ cd copa2026
 # Roda tudo: validação + calibração + predição da Copa 2026
 python3 main.py
 
+# Gera o RELATÓRIO COMPLETO da fase de grupos (RELATORIO_FASE_GRUPOS.md)
+python3 gerar_relatorio.py
+
 # Mais simulações / mais iterações de calibração (mais preciso, mais lento)
 python3 main.py --sims 50000 --iters 8000
 
@@ -32,6 +35,10 @@ python3 main.py --no-calibrate --predict "Brazil|France"
 # Testes
 python3 -m tests.test_model
 ```
+
+> 📄 **O relatório da fase de grupos fica em [`RELATORIO_FASE_GRUPOS.md`](RELATORIO_FASE_GRUPOS.md)** —
+> previsão de cada jogo, classificação projetada por grupo, disputa pelos
+> melhores terceiros e os 32 classificados ao mata-mata.
 
 ## Fatores considerados (pedidos no enunciado)
 
@@ -66,8 +73,12 @@ python3 -m tests.test_model
 O ponto central do pedido — *"rode o algoritmo para verificar a acurácia,
 fazendo correções para melhorar a predição"* — está implementado assim:
 
-- **Conjunto de validação**: 39 jogos reais da Copa de 2022, com os ratings
-  pré-torneio das seleções (`data/backtest_wc2022.json`).
+- **Conjunto de validação**: **115 jogos reais** de três grandes competições,
+  com os ratings pré-torneio das seleções:
+  - Copa do Mundo 2022 (`data/backtest_wc2022.json`) — 39 jogos;
+  - Eurocopa 2024 (`data/backtest_euro2024.json`) — 48 jogos;
+  - Copa América 2024 (`data/backtest_copa2024.json`) — 28 jogos.
+  Qualquer arquivo `data/backtest_*.json` é carregado e usado automaticamente.
 - **Métricas**: acurácia (acerto do resultado), **log-loss** e **Brier score**
   (medem a qualidade das *probabilidades*, não só do palpite).
 - **Calibração automática** (`src/calibrate.py`): busca aleatória + refino local
@@ -85,22 +96,34 @@ de generalizar. Correções feitas:
    dando uma estimativa **honesta** de acurácia (evita superestimar olhando só
    para o conjunto memorizado).
 
-Resultado típico: ~56% de acurácia (vs. 33% do acaso) e melhora consistente do
-log-loss após a calibração, com pesos distribuídos de forma plausível.
+Resultado típico (115 jogos): ~58% de acurácia (vs. 33% do acaso), com
+validação cruzada confirmando ~58% em jogos **não vistos** — sinal de que o
+modelo generaliza, e não decora. Os pesos calibrados ficam distribuídos de
+forma plausível (forma recente e esquema tático puxando mais que o ranking
+FIFA puro, que é em boa parte redundante com os demais fatores).
+
+> Observação honesta: nesta base, a **vantagem de mando** calibrou perto de
+> zero — Alemanha (Euro) e EUA (Copa América) não superaram a expectativa como
+> mandantes. O campo `host` permanece no modelo; se dados futuros mostrarem o
+> efeito, a calibração o capta automaticamente.
 
 ## Estrutura
 
 ```
 copa2026/
 ├── main.py                      # orquestra validação + calibração + predição
+├── gerar_relatorio.py           # gera o relatório Markdown da fase de grupos
+├── RELATORIO_FASE_GRUPOS.md     # relatório gerado (saída)
 ├── data/
 │   ├── teams_2026.json          # 48 seleções, grupos e fatores
 │   ├── head_to_head.json        # confrontos diretos históricos
-│   └── backtest_wc2022.json     # conjunto de validação (Copa 2022)
+│   ├── backtest_wc2022.json     # validação: Copa do Mundo 2022
+│   ├── backtest_euro2024.json   # validação: Eurocopa 2024
+│   └── backtest_copa2024.json   # validação: Copa América 2024
 ├── src/
 │   ├── model.py                 # força, gols esperados (Poisson), probabilidades
 │   ├── ratings.py               # montagem dos vetores de fatores
-│   ├── backtest.py              # métricas de acurácia
+│   ├── backtest.py              # métricas de acurácia (multi-competição)
 │   ├── calibrate.py             # calibração + validação cruzada
 │   ├── simulate.py              # Monte Carlo do torneio
 │   └── data_loader.py           # carga das bases

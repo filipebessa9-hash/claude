@@ -1,5 +1,6 @@
 """Carregamento das bases de dados (selecoes, confrontos diretos, backtest)."""
 
+import glob
 import json
 import os
 
@@ -31,6 +32,20 @@ def load_backtest(path=None):
     path = path or os.path.join(DATA_DIR, "backtest_wc2022.json")
     with open(path, encoding="utf-8") as f:
         return json.load(f)
+
+
+def load_backtests():
+    """Carrega TODOS os conjuntos de validacao (backtest_*.json).
+
+    Retorna lista de datasets, cada um com nome, host, ratings e matches.
+    """
+    datasets = []
+    for path in sorted(glob.glob(os.path.join(DATA_DIR, "backtest_*.json"))):
+        with open(path, encoding="utf-8") as f:
+            ds = json.load(f)
+        ds["name"] = os.path.basename(path).replace("backtest_", "").replace(".json", "")
+        datasets.append(ds)
+    return datasets
 
 
 def groups_from_teams(teams):

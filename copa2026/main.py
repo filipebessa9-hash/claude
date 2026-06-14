@@ -74,18 +74,20 @@ def main():
     teams = data_loader.load_teams()
     h2h_table = data_loader.load_h2h()
     groups = data_loader.groups_from_teams(teams)
-    bt = data_loader.load_backtest()
+    datasets = data_loader.load_backtests()
+    samples = backtest.build_samples(datasets, h2h_table)
 
     print("=" * 64)
     print(" ALGORITMO DE PREDICAO - COPA DO MUNDO 2026")
     print("=" * 64)
-    print(f"  Selecoes: {len(teams)}  |  Grupos: {len(groups)}  |  "
-          f"Jogos de validacao (Copa 2022): {len(bt['matches'])}")
+    comps = ", ".join(f"{ds['name']} ({len(ds['matches'])})" for ds in datasets)
+    print(f"  Selecoes: {len(teams)}  |  Grupos: {len(groups)}")
+    print(f"  Base de validacao: {len(samples)} jogos -> {comps}")
 
     # ---- 1. Acuracia do modelo-base ------------------------------------
-    print("\n[1] VALIDACAO DO MODELO-BASE (contra resultados reais da Copa 2022)")
+    print("\n[1] VALIDACAO DO MODELO-BASE (contra resultados reais)")
     baseline_params = model.default_params()
-    baseline_metrics = backtest.evaluate(baseline_params, bt, h2h_table)
+    baseline_metrics = backtest.evaluate_samples(baseline_params, samples)
     print_metrics("Modelo-base (pesos iniciais):", baseline_metrics)
 
     # ---- 2. Calibracao (correcao) --------------------------------------
@@ -94,17 +96,21 @@ def main():
         print("\n[2] CALIBRACAO: desativada (--no-calibrate)")
     else:
         print("\n[2] CALIBRACAO AUTOMATICA (ajustando pesos para melhorar a acuracia)")
-        res = calibrate.calibrate(bt, h2h_table, n_iter=args.iters, verbose=True)
+        res = calibrate.calibrate(samples, n_iter=args.iters, verbose=True)
         best_params = res["best_params"]
         best_metrics = res["best_metrics"]
         print_metrics("Modelo calibrado (conjunto completo):", best_metrics)
 
         print("\n  Validacao cruzada 5-fold (acuracia honesta em jogos NAO vistos):")
-        cv = calibrate.cross_validate(bt, h2h_table,
-                                      n_iter=max(600, args.iters // 4))
+        cv = calibrate.cross_validate(samples, n_iter=max(600, args.iters // 4))
         print(f"    Acuracia (held-out): {cv['accuracy']*100:5.1f}%")
         print(f"    Log-loss (held-out): {cv['logloss']:.4f}")
         print(f"    Brier    (held-out): {cv['brier']:.4f}")
+
+        print("\n  Acuracia por competicao (modelo calibrado):")
+        for comp, m in backtest.by_competition(best_params, datasets, h2h_table).items():
+            print(f"    {comp:10s}: {m['accuracy']*100:5.1f}%  "
+                  f"(log-loss {m['logloss']:.3f}, n={m['n']})")
 
         d_acc = (best_metrics["accuracy"] - baseline_metrics["accuracy"]) * 100
         d_ll = baseline_metrics["logloss"] - best_metrics["logloss"]
