@@ -122,6 +122,13 @@ export default function HomeScreen() {
               >
                 <Text style={styles.actionButtonText}>Check-in</Text>
               </Pressable>
+              <Pressable
+                style={styles.actionButton}
+                onPress={() => router.push('/nivel')}
+                accessibilityRole="button"
+              >
+                <Text style={styles.actionButtonText}>Nível</Text>
+              </Pressable>
             </View>
             <Pressable
               style={styles.linkButton}

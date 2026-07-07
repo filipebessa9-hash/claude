@@ -19,6 +19,7 @@ export default function RootLayout() {
         <Stack.Screen name="registrar-sintoma" options={{ title: 'Registrar sintoma' }} />
         <Stack.Screen name="check-in" options={{ title: 'Check-in do dia' }} />
         <Stack.Screen name="medico" options={{ title: 'Meu médico' }} />
+        <Stack.Screen name="nivel" options={{ title: 'Nível estimado' }} />
       </Stack>
     </AuthProvider>
   );
