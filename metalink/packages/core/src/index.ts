@@ -11,3 +11,5 @@ export * from './alerts';
 export * from './checkin-summary';
 export * from './chart';
 export * from './pk';
+export * from './reminders';
+export * from './weekly-summary';
