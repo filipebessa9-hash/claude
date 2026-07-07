@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { redirect } from 'next/navigation';
 
 import { userRoleLabels } from '@metalink/core';
@@ -148,7 +149,9 @@ export default async function DashboardPage() {
           <ul className="patient-list">
             {activeLinks.map((link) => (
               <li key={link.id}>
-                <strong>{nameById.get(link.patient_id) ?? 'Paciente'}</strong>
+                <Link href={`/dashboard/paciente/${link.patient_id}`}>
+                  <strong>{nameById.get(link.patient_id) ?? 'Paciente'}</strong>
+                </Link>
                 <span className="info">
                   {' '}
                   — vinculado em {new Date(link.created_at).toLocaleDateString('pt-BR')}
@@ -157,7 +160,9 @@ export default async function DashboardPage() {
             ))}
           </ul>
         )}
-        <p className="info">O painel detalhado por paciente chega na próxima etapa.</p>
+        <p className="info">
+          Clique no paciente para a visão completa: peso, aderência, sintomas e relatório em PDF.
+        </p>
       </section>
 
       <form action={signOut}>
