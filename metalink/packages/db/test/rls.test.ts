@@ -253,4 +253,100 @@ suite('Row Level Security', () => {
       ),
     ).rejects.toThrow(/row-level security/);
   });
+
+  it('fluxo de convite: criar → prever → resgatar → acesso → esgotar → revogar', async () => {
+    // Médica nova, sem nenhum vínculo, para isolar o fluxo.
+    const providerB = randomUUID();
+    await pool.query(
+      `insert into auth.users (id, email, raw_user_meta_data) values
+         ($1, 'dra.carla@example.com', '{"role":"provider","full_name":"Dra. Carla","crm":"CRM-RJ 654321"}')`,
+      [providerB],
+    );
+
+    // Paciente não pode criar código; médico não pode resgatar.
+    await expect(
+      asUser(patientB, (c) => c.query('select * from create_invite_code()')),
+    ).rejects.toThrow(/only_providers_can_create_invites/);
+
+    const code: string = await asUser(
+      providerB,
+      async (c) => (await c.query('select code from create_invite_code(14, 1)')).rows[0].code,
+    );
+    expect(code).toMatch(/^[0-9A-F]{8}$/);
+
+    await expect(
+      asUser(providerB, (c) => c.query('select * from redeem_invite_code($1)', [code])),
+    ).rejects.toThrow(/only_patients_can_redeem/);
+
+    // Preview mostra quem convida, sem consumir o código.
+    const preview = await asUser(
+      patientB,
+      async (c) => (await c.query('select * from preview_invite_code($1)', [code])).rows[0],
+    );
+    expect(preview.provider_name).toBe('Dra. Carla');
+    expect(preview.provider_crm).toBe('CRM-RJ 654321');
+
+    // Código inexistente é rejeitado.
+    await expect(
+      asUser(patientB, (c) => c.query(`select * from redeem_invite_code('FFFFFFFF')`)),
+    ).rejects.toThrow(/invite_not_found/);
+
+    // Resgate aceita código "sujo" (minúsculas, espaços) graças à normalização.
+    await asUser(patientB, (c) =>
+      c.query('select * from redeem_invite_code($1)', [` ${code.toLowerCase()} `]),
+    );
+
+    // Médica agora vê os dados de patientB — e só dele.
+    const doses = await asUser(
+      providerB,
+      async (c) => (await c.query('select patient_id from dose_logs')).rows,
+    );
+    expect(doses.map((r) => r.patient_id)).toEqual([patientB]);
+
+    // Consentimento e auditoria registrados pelo resgate.
+    const consent = await pool.query(
+      `select granted from consent_records
+        where patient_id = $1 and consent_type = 'provider_sharing'
+        order by created_at desc limit 1`,
+      [patientB],
+    );
+    expect(consent.rows[0].granted).toBe(true);
+    const audit = await pool.query(
+      `select 1 from audit_logs where actor_id = $1 and action = 'redeem_invite'`,
+      [patientB],
+    );
+    expect(audit.rows).toHaveLength(1);
+
+    // max_uses = 1: segundo resgate falha.
+    await expect(
+      asUser(patientA, (c) => c.query('select * from redeem_invite_code($1)', [code])),
+    ).rejects.toThrow(/invite_exhausted/);
+
+    // Código expirado é rejeitado no preview e no resgate.
+    const expired: string = await asUser(
+      providerB,
+      async (c) => (await c.query('select code from create_invite_code(1, 5)')).rows[0].code,
+    );
+    await pool.query(
+      `update invite_codes set expires_at = now() - interval '1 hour' where code = $1`,
+      [expired],
+    );
+    await expect(
+      asUser(patientA, (c) => c.query('select * from preview_invite_code($1)', [expired])),
+    ).rejects.toThrow(/invite_expired/);
+
+    // Revogação pelo paciente corta o acesso imediatamente.
+    await asUser(patientB, (c) =>
+      c.query(
+        `update patient_provider_links set status = 'revoked', revoked_at = now()
+          where provider_id = $1`,
+        [providerB],
+      ),
+    );
+    const afterRevoke = await asUser(
+      providerB,
+      async (c) => (await c.query('select * from dose_logs')).rows,
+    );
+    expect(afterRevoke).toHaveLength(0);
+  });
 });
