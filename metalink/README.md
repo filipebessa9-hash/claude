@@ -90,3 +90,11 @@ Os testes de RLS provam no banco que: paciente só acessa os próprios dados; m�
 3. Em Sintomas, registre um efeito colateral (tipo + intensidade + quando): ele entra na linha do tempo.
 4. Em Check-in, responda o que quiser (tudo opcional) e salve; reabra no mesmo dia e confira que os valores voltam preenchidos (1 check-in por dia, atualizável).
 5. Faixas inválidas são bloqueadas (peso fora de 20–400 kg, horário no futuro).
+
+## Teste manual da Fatia 3 (vínculo paciente ↔ médico)
+
+1. No painel web, logado como médico, clique em **“Gerar código de convite”** — o código aparece com validade de 14 dias e uso único, e entra na tabela de códigos.
+2. No app, como paciente, abra **“Meu médico”**, digite o código (minúsculas/espaços/O no lugar de 0 funcionam) e toque em **Verificar código** — o app mostra quem está convidando (nome/CRM).
+3. Toque em **“Autorizar e vincular”** — a tela de consentimento explica o que será compartilhado. Após confirmar, o vínculo aparece como ativo.
+4. Recarregue o painel web: o paciente aparece em **“Pacientes vinculados”** e o código consta como usado (1/1). Reusar o mesmo código falha (“já foi utilizado”).
+5. No app, toque em **“Revogar acesso”** e confirme: o painel web deixa de listar/exibir os dados do paciente imediatamente.

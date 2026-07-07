@@ -18,3 +18,7 @@ Formato: data — decisão (1-2 linhas).
 - 2026-07-07 — (Fatia 1) Mobile acessa o Supabase direto do cliente (padrão Supabase), confiando no RLS testado por integração; sem camada de API própria por ora.
 - 2026-07-07 — (Fatia 2) Gráfico de tendência de peso desenhado com react-native-svg + função pura em @metalink/core (buildWeightChartPoints), em vez de lib de gráficos: zero config, testável por unidade, e a mesma função servirá ao painel web.
 - 2026-07-07 — (Fatia 2) Check-in diário é upsert por (patient_id, checkin_date) no fuso local do aparelho; tocar de novo no mesmo valor desmarca (tudo opcional, sem obrigação de completar).
+- 2026-07-07 — (Fatia 3) Fluxo de convite roda inteiro em funções security definer (create/preview/redeem): atômico, não expõe invite_codes ao paciente, e o resgate grava vínculo + consentimento + auditoria na mesma transação.
+- 2026-07-07 — (Fatia 3) Código de convite: 8 hex de gen_random_uuid() (32 bits) — suficiente porque expira, tem max_uses e o resgate ainda exige consentimento; normalização espelhada (SQL + core) corrige O→0 e I/L→1.
+- 2026-07-07 — (Fatia 3) Consentimento provider_sharing é global do paciente (registrado no resgate); revogar um médico específico = revogar o vínculo (status revoked). Revogação total de compartilhamento (consent false) ficará na tela LGPD da Fatia 7.
+- 2026-07-07 — (Fatia 3) Preview antes do resgate: o paciente vê nome/CRM de quem convida antes de consentir (decisão informada, LGPD).
