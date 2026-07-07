@@ -4,13 +4,17 @@
 
 import {
   buildAlertFlags,
+  buildPkCurve,
   computeAdherence,
+  estimateLevelAt,
   intervalDaysForRoute,
+  relativeLevelPct,
   summarizeCheckins,
   summarizeWeightTrend,
   type AdherenceSummary,
   type AlertFlag,
   type CheckinSummary,
+  type PkPoint,
   type WeightPoint,
   type WeightTrendSummary,
 } from '@metalink/core';
@@ -33,6 +37,10 @@ export interface PatientReport {
   adherence: AdherenceSummary | null;
   checkinSummary: CheckinSummary; // últimos 14 dias
   flags: AlertFlag[];
+  /** Curva PK dos últimos 30 dias do medicamento mais recente; null sem doses. */
+  pkCurve: PkPoint[] | null;
+  pkRelativePct: number | null;
+  pkMedicationName: string | null;
 }
 
 /**
@@ -142,6 +150,24 @@ export async function fetchPatientReport(
     now,
   });
 
+  // Nível estimado (Seção 6): curva PK do medicamento mais recente, 30 dias.
+  let pkCurve: PkPoint[] | null = null;
+  let pkRelativePct: number | null = null;
+  let pkMedicationName: string | null = null;
+  if (lastDoseMedication) {
+    const pkDoses = doses
+      .filter((d) => d.medication_id === lastDoseMedication.id)
+      .map((d) => ({ takenAt: new Date(d.taken_at), doseMg: Number(d.dose_mg) }));
+    const halfLife = Number(lastDoseMedication.half_life_hours);
+    pkCurve = buildPkCurve(pkDoses, halfLife, {
+      from: new Date(now.getTime() - 30 * DAY_MS),
+      to: now,
+      stepHours: 6,
+    });
+    pkRelativePct = relativeLevelPct(pkCurve, estimateLevelAt(pkDoses, halfLife, now));
+    pkMedicationName = lastDoseMedication.brand_name;
+  }
+
   return {
     patientId,
     patientName: profile.full_name || 'Paciente',
@@ -159,5 +185,8 @@ export async function fetchPatientReport(
     adherence,
     checkinSummary,
     flags,
+    pkCurve,
+    pkRelativePct,
+    pkMedicationName,
   };
 }

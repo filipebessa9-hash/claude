@@ -6,6 +6,7 @@ import {
   injectionSiteLabels,
   symptomSeverityLabels,
   symptomTypeLabels,
+  PK_ESTIMATE_DISCLAIMER,
 } from '@metalink/core';
 import { Document, Page, StyleSheet, Text, View } from '@react-pdf/renderer';
 
@@ -99,6 +100,21 @@ export function ReportDocument({ report }: { report: PatientReport }) {
           ) : (
             <Text style={styles.info}>Sem registros de peso nos últimos 180 dias.</Text>
           )}
+        </View>
+
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Nível estimado de medicação (últimos 30 dias)</Text>
+          {report.pkMedicationName ? (
+            <Text>
+              {report.pkMedicationName}
+              {report.pkRelativePct !== null
+                ? ` — nível atual estimado em ≈${report.pkRelativePct}% do pico do período.`
+                : ' — sem doses no período; nível estimado próximo de zero.'}
+            </Text>
+          ) : (
+            <Text style={styles.info}>Sem registros de dose para estimar o nível.</Text>
+          )}
+          <Text style={styles.info}>{PK_ESTIMATE_DISCLAIMER}</Text>
         </View>
 
         <View style={styles.section}>

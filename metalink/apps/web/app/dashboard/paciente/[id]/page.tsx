@@ -2,12 +2,14 @@ import Link from 'next/link';
 import { notFound, redirect } from 'next/navigation';
 
 import {
+  buildSeriesChartPoints,
   buildWeightChartPoints,
   formatDoseMg,
   formatWeightKg,
   injectionSiteLabels,
   symptomSeverityLabels,
   symptomTypeLabels,
+  PK_ESTIMATE_DISCLAIMER,
 } from '@metalink/core';
 
 import { fetchPatientReport, logPatientAccess } from '@/lib/patient-report';
@@ -125,6 +127,47 @@ export default async function PacientePage({ params }: { params: Promise<{ id: s
         ) : (
           <p className="info">Sem registros de peso nos últimos 180 dias.</p>
         )}
+      </section>
+
+      <section>
+        <h2>Nível estimado de medicação (últimos 30 dias)</h2>
+        {report.pkCurve && report.pkMedicationName ? (
+          <>
+            <p>
+              {report.pkMedicationName}
+              {report.pkRelativePct !== null
+                ? ` — agora em ≈${report.pkRelativePct}% do pico do período.`
+                : ' — sem doses no período; nível estimado próximo de zero.'}
+            </p>
+            {(() => {
+              const pkPoints = buildSeriesChartPoints(
+                report.pkCurve.map((p) => ({ t: p.at, value: p.level })),
+                { width: CHART_WIDTH, height: CHART_HEIGHT, padding: 10 },
+              );
+              return (
+                pkPoints.length >= 2 && (
+                  <svg
+                    width={CHART_WIDTH}
+                    height={CHART_HEIGHT}
+                    role="img"
+                    aria-label="Curva estimada do nível de medicação"
+                    className="chart"
+                  >
+                    <polyline
+                      points={pkPoints.map((p) => `${p.x},${p.y}`).join(' ')}
+                      fill="none"
+                      stroke="#0f6e5c"
+                      strokeWidth={2}
+                    />
+                  </svg>
+                )
+              );
+            })()}
+          </>
+        ) : (
+          <p className="info">Sem registros de dose para estimar o nível.</p>
+        )}
+        <p className="info">{PK_ESTIMATE_DISCLAIMER}</p>
       </section>
 
       <section>
