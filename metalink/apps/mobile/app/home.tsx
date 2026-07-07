@@ -171,9 +171,18 @@ export default function HomeScreen() {
           )
         }
         ListFooterComponent={
-          <Pressable onPress={handleSignOut} accessibilityRole="button" style={styles.signOut}>
-            <Text style={styles.signOutText}>Sair da conta</Text>
-          </Pressable>
+          <View style={styles.footer}>
+            <Pressable
+              onPress={() => router.push('/dados')}
+              accessibilityRole="button"
+              style={styles.signOut}
+            >
+              <Text style={styles.signOutText}>Privacidade e dados</Text>
+            </Pressable>
+            <Pressable onPress={handleSignOut} accessibilityRole="button" style={styles.signOut}>
+              <Text style={styles.signOutText}>Sair da conta</Text>
+            </Pressable>
+          </View>
         }
       />
     </View>
@@ -235,6 +244,7 @@ const styles = StyleSheet.create({
   emptyTitle: { fontSize: 17, fontWeight: '600' },
   emptyText: { fontSize: 14, color: '#6b7280', textAlign: 'center', lineHeight: 20 },
   error: { color: '#b91c1c' },
-  signOut: { alignItems: 'center', marginTop: 28, minHeight: 44, justifyContent: 'center' },
+  footer: { marginTop: 20 },
+  signOut: { alignItems: 'center', marginTop: 8, minHeight: 44, justifyContent: 'center' },
   signOutText: { color: '#6b7280', textDecorationLine: 'underline' },
 });

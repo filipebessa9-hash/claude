@@ -22,6 +22,9 @@ export default function RootLayout() {
         <Stack.Screen name="nivel" options={{ title: 'Nível estimado' }} />
         <Stack.Screen name="lembretes" options={{ title: 'Lembretes' }} />
         <Stack.Screen name="resumo" options={{ title: 'Resumo da semana' }} />
+        <Stack.Screen name="dados" options={{ title: 'Privacidade e dados' }} />
+        <Stack.Screen name="termos" options={{ title: 'Termos de Uso' }} />
+        <Stack.Screen name="politica-privacidade" options={{ title: 'Privacidade' }} />
       </Stack>
     </AuthProvider>
   );

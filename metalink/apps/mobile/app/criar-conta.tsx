@@ -9,6 +9,7 @@ export default function CriarContaScreen() {
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [accepted, setAccepted] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -18,11 +19,16 @@ export default function CriarContaScreen() {
       setError('A senha precisa ter pelo menos 8 caracteres.');
       return;
     }
+    if (!accepted) {
+      setError('Para criar a conta, aceite os Termos de Uso e a Política de Privacidade.');
+      return;
+    }
     setLoading(true);
     const { data, error: signUpError } = await supabase.auth.signUp({
       email,
       password,
-      options: { data: { role: 'patient', full_name: fullName } },
+      // accepted_terms vira registro de consentimento no banco (trigger de signup).
+      options: { data: { role: 'patient', full_name: fullName, accepted_terms: 'true' } },
     });
     setLoading(false);
     if (signUpError) {
@@ -70,6 +76,25 @@ export default function CriarContaScreen() {
         onChangeText={setPassword}
         accessibilityLabel="Senha"
       />
+      <Pressable
+        style={styles.consentRow}
+        onPress={() => setAccepted((v) => !v)}
+        accessibilityRole="checkbox"
+        accessibilityState={{ checked: accepted }}
+      >
+        <Text style={styles.checkbox}>{accepted ? '☑' : '☐'}</Text>
+        <Text style={styles.consentText}>
+          Li e aceito os{' '}
+          <Link href="/termos" style={styles.inlineLink}>
+            Termos de Uso
+          </Link>{' '}
+          e a{' '}
+          <Link href="/politica-privacidade" style={styles.inlineLink}>
+            Política de Privacidade
+          </Link>
+          .
+        </Text>
+      </Pressable>
       {error && <Text style={styles.error}>{error}</Text>}
       <Pressable
         style={[styles.button, loading && styles.buttonDisabled]}
@@ -108,4 +133,8 @@ const styles = StyleSheet.create({
   buttonText: { color: '#fff', fontSize: 16, fontWeight: '600' },
   error: { color: '#b91c1c' },
   link: { textAlign: 'center', color: '#0f6e5c', marginTop: 8 },
+  consentRow: { flexDirection: 'row', gap: 8, alignItems: 'flex-start', minHeight: 44 },
+  checkbox: { fontSize: 20, color: '#0f6e5c', lineHeight: 24 },
+  consentText: { flex: 1, fontSize: 13, color: '#374151', lineHeight: 19 },
+  inlineLink: { color: '#0f6e5c', textDecorationLine: 'underline' },
 });
