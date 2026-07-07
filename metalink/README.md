@@ -122,3 +122,11 @@ Os testes de RLS provam no banco que: paciente só acessa os próprios dados; m�
 4. Confira que as notificações exibem apenas texto genérico — sem medicamento, dose ou peso (LGPD/tela bloqueada).
 5. Abra **“Resumo da semana”**: doses registradas × esperadas, último peso e variação, sintomas (com aviso gentil se houve intensos) e dias com check-in — em tom encorajador, sem cobrança.
    Nota: em builds de desenvolvimento no Expo Go, notificações locais funcionam; para produção use um development build/EAS.
+
+## Teste manual da Fatia 7 (LGPD, hardening e acessibilidade)
+
+1. Crie uma conta nova de paciente: o cadastro exige marcar o aceite dos **Termos** e da **Política de Privacidade** (telas reais, com placeholder legal); no Supabase Studio, `consent_records` ganha os registros `terms` e `privacy`.
+2. Na home, abra **“Privacidade e dados”**: exporte seus dados (JSON completo via compartilhamento do sistema) — o evento `export_own_data` aparece em `audit_logs`.
+3. **“Revogar todo o compartilhamento”**: médicos perdem acesso na hora (consentimento negativo + vínculos revogados).
+4. **“Excluir minha conta e dados”** (dupla confirmação): a conta some de `auth.users` e todos os registros são eliminados em cascata; a trilha de auditoria permanece com o evento `account_deleted`.
+5. No painel web, confira os security headers (`X-Frame-Options: DENY`, `nosniff`, `Referrer-Policy`) nas respostas.

@@ -32,3 +32,7 @@ Formato: data — decisão (1-2 linhas).
 - 2026-07-07 — (Fatia 6) Lembretes 100% locais (expo-notifications), sem infra de push no MVP: lembrete de dose é one-shot reagendado a cada dose salva/ajuste de configuração; resumo semanal é gatilho recorrente (domingo 18h). Limitação aceita: sem abrir o app após o lembrete disparar, o ciclo seguinte só é agendado no próximo uso.
 - 2026-07-07 — (Fatia 6) Texto das notificações nunca contém dados de saúde (aparece em tela bloqueada) — só um convite genérico para abrir o app (Seção 7).
 - 2026-07-07 — (Fatia 6) Configurações de lembrete ficam em AsyncStorage no aparelho (não no banco): são preferências do dispositivo, não dados clínicos.
+- 2026-07-07 — (Fatia 7) Direitos do titular como RPCs security definer: export_patient_data (JSON completo, auditado) e delete_patient_account (DELETE em auth.users cascateia tudo; audit_logs sem FK de propósito para a trilha sobreviver com uuid órfão, não identificável).
+- 2026-07-07 — (Fatia 7) Exclusão self-service só para paciente; conta de médico sai via backoffice/suporte no MVP (evita órfãos de vínculos clínicos sem revisão).
+- 2026-07-07 — (Fatia 7) Consentimento de termos/privacidade gravado pelo trigger de signup a partir de accepted_terms nos metadados; para médicos fica nos metadados do auth.users (consent_records é escopado a paciente).
+- 2026-07-07 — (Fatia 7) Security headers no next.config (X-Frame-Options DENY, nosniff, Referrer-Policy, Permissions-Policy) — painel lida com dados sensíveis.
