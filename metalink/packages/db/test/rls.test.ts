@@ -349,4 +349,81 @@ suite('Row Level Security', () => {
     );
     expect(afterRevoke).toHaveLength(0);
   });
+
+  it('signup com aceite registra consentimento de termos e privacidade', async () => {
+    const patientD = randomUUID();
+    await pool.query(
+      `insert into auth.users (id, email, raw_user_meta_data) values
+         ($1, 'paciente.d@example.com',
+          '{"role":"patient","full_name":"Paciente D","accepted_terms":"true"}')`,
+      [patientD],
+    );
+    const consents = await pool.query(
+      `select consent_type, granted from consent_records where patient_id = $1
+        order by consent_type::text`,
+      [patientD],
+    );
+    expect(consents.rows).toEqual([
+      { consent_type: 'privacy', granted: true },
+      { consent_type: 'terms', granted: true },
+    ]);
+  });
+
+  it('LGPD: exportação retorna só os dados do titular e é auditada', async () => {
+    const exported = await asUser(
+      patientA,
+      async (c) => (await c.query('select export_patient_data() as data')).rows[0].data,
+    );
+    expect(exported.profile.id).toBe(patientA);
+    expect(exported.dose_logs.length).toBeGreaterThanOrEqual(1);
+    for (const dose of exported.dose_logs) {
+      expect(dose.patient_id).toBe(patientA);
+    }
+    expect(exported.consent_records.length).toBeGreaterThanOrEqual(1);
+
+    const audit = await pool.query(
+      `select 1 from audit_logs where actor_id = $1 and action = 'export_own_data'`,
+      [patientA],
+    );
+    expect(audit.rows).toHaveLength(1);
+
+    // Médico não é titular: não exporta.
+    await expect(asUser(provider, (c) => c.query('select export_patient_data()'))).rejects.toThrow(
+      /only_patients_can_export/,
+    );
+  });
+
+  it('LGPD: exclusão de conta apaga os dados e preserva a trilha de auditoria', async () => {
+    const patientE = randomUUID();
+    await pool.query(
+      `insert into auth.users (id, email, raw_user_meta_data) values
+         ($1, 'paciente.e@example.com', '{"role":"patient","full_name":"Paciente E"}')`,
+      [patientE],
+    );
+    await pool.query(
+      `insert into dose_logs (patient_id, medication_id, dose_mg, taken_at)
+         values ($1, $2, 0.25, now())`,
+      [patientE, ozempicId],
+    );
+
+    // Médico não pode excluir conta por esta via.
+    await expect(
+      asUser(provider, (c) => c.query('select delete_patient_account()')),
+    ).rejects.toThrow(/only_patients_can_delete_account/);
+
+    await asUser(patientE, (c) => c.query('select delete_patient_account()'));
+
+    const [users, profiles, doses, audit] = await Promise.all([
+      pool.query('select 1 from auth.users where id = $1', [patientE]),
+      pool.query('select 1 from profiles where id = $1', [patientE]),
+      pool.query('select 1 from dose_logs where patient_id = $1', [patientE]),
+      pool.query(`select 1 from audit_logs where patient_id = $1 and action = 'account_deleted'`, [
+        patientE,
+      ]),
+    ]);
+    expect(users.rows).toHaveLength(0);
+    expect(profiles.rows).toHaveLength(0);
+    expect(doses.rows).toHaveLength(0);
+    expect(audit.rows).toHaveLength(1);
+  });
 });
