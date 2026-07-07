@@ -9,3 +9,5 @@ export * from './invite-code';
 export * from './adherence';
 export * from './alerts';
 export * from './checkin-summary';
+export * from './chart';
+export * from './pk';

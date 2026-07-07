@@ -1,6 +1,7 @@
 // Lógica de peso e tendência (Fatia 2). Tom do produto: informativo e
 // não-julgador — aqui só números; nada de "metas" ou juízo de valor.
 
+import { buildSeriesChartPoints, type ChartLayout, type ChartPoint } from './chart';
 import { formatPtBrDecimal, parsePtBrDecimal } from './number';
 
 // Mesma faixa do CHECK de weight_logs no banco.
@@ -51,46 +52,13 @@ export function summarizeWeightTrend(points: WeightPoint[], now: Date): WeightTr
   };
 }
 
-export interface ChartPoint {
-  x: number;
-  y: number;
-}
-
-export interface ChartLayout {
-  width: number;
-  height: number;
-  padding?: number;
-}
-
 /**
- * Converte a série de pesos em coordenadas para uma polyline SVG:
- * x linear no tempo, y invertido (peso maior = mais alto no gráfico).
- * Um único ponto é centralizado. Retorna [] sem registros.
+ * Converte a série de pesos em coordenadas para uma polyline SVG.
+ * Delegado ao helper genérico de séries temporais (chart.ts).
  */
 export function buildWeightChartPoints(points: WeightPoint[], layout: ChartLayout): ChartPoint[] {
-  if (points.length === 0) {
-    return [];
-  }
-  const padding = layout.padding ?? 8;
-  const innerWidth = layout.width - padding * 2;
-  const innerHeight = layout.height - padding * 2;
-  const sorted = [...points].sort((a, b) => a.measuredAt.getTime() - b.measuredAt.getTime());
-
-  const times = sorted.map((p) => p.measuredAt.getTime());
-  const weights = sorted.map((p) => p.weightKg);
-  const minTime = Math.min(...times);
-  const maxTime = Math.max(...times);
-  const minWeight = Math.min(...weights);
-  const maxWeight = Math.max(...weights);
-  const timeSpan = maxTime - minTime;
-  const weightSpan = maxWeight - minWeight;
-
-  return sorted.map((p) => {
-    const xRatio = timeSpan === 0 ? 0.5 : (p.measuredAt.getTime() - minTime) / timeSpan;
-    const yRatio = weightSpan === 0 ? 0.5 : (p.weightKg - minWeight) / weightSpan;
-    return {
-      x: padding + xRatio * innerWidth,
-      y: padding + (1 - yRatio) * innerHeight,
-    };
-  });
+  return buildSeriesChartPoints(
+    points.map((p) => ({ t: p.measuredAt, value: p.weightKg })),
+    layout,
+  );
 }
