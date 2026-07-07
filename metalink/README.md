@@ -74,3 +74,11 @@ Os testes de RLS provam no banco que: paciente só acessa os próprios dados; m�
 2. Crie uma conta de médico em `http://localhost:3000/cadastro` e entre — você verá o estado vazio do painel.
 3. No app mobile (Expo Go), crie uma conta de paciente e entre — você verá a tela inicial do paciente.
 4. Confirme no Supabase Studio (`http://127.0.0.1:54323`) que `profiles`, `patients` e `providers` foram criados com os papéis corretos.
+
+## Teste manual da Fatia 1 (registro de dose)
+
+1. Entre no app como paciente. A home mostra o botão **“+ Registrar dose”** e o estado vazio.
+2. Toque em registrar: escolha o medicamento (chips), a dose (chips de titulação ou campo em mg com vírgula), o local de aplicação (★ marca o sugerido pela rotação) e quando foi (Hoje/Ontem/Anteontem + HH:MM). Salve.
+3. De volta à home, a dose aparece no histórico (“Hoje às …”), com pull-to-refresh.
+4. Registre uma segunda dose: a tela vem **pré-preenchida** com o último medicamento e dose, e o local sugerido avança no ciclo — o fluxo recorrente leva ~3 toques (< 15 s).
+5. Valide os erros: dose vazia/inválida, horário no futuro e HH:MM malformado são bloqueados com mensagens em pt-BR.

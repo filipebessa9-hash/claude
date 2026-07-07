@@ -13,3 +13,6 @@ Formato: data — decisão (1-2 linhas).
 - 2026-07-07 — Minimização LGPD no cadastro do paciente: `birth_year` (não data de nascimento completa) e `height_cm`, ambos opcionais.
 - 2026-07-07 — Tipos de banco em `@metalink/db` escritos à mão na Fatia 0 (apps só usam auth); serão substituídos por `supabase gen types` na Fatia 1.
 - 2026-07-07 — Pacientes se cadastram no app móvel; médicos, no painel web (simplifica cada UI para sua persona).
+- 2026-07-07 — (Fatia 1) Registro de dose grava `taken_at = dia (Hoje/Ontem/Anteontem) + HH:MM` em vez de datetime picker nativo: zero dependência extra, cobre o caso real ("esqueci de registrar ontem") e mantém o fluxo recorrente em ~3 toques. Datas mais antigas ficam para edição de histórico (fatia futura).
+- 2026-07-07 — (Fatia 1) Pré-preenchimento vem do último `dose_log` (medicamento, dose, próximo local do ciclo), não de `patient_medications`; o esquema ativo do paciente entra na fatia de aderência, onde é de fato necessário.
+- 2026-07-07 — (Fatia 1) Mobile acessa o Supabase direto do cliente (padrão Supabase), confiando no RLS testado por integração; sem camada de API própria por ora.
