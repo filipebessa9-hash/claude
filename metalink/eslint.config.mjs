@@ -27,4 +27,12 @@ export default tseslint.config(
       'no-console': ['error', { allow: ['warn', 'error'] }],
     },
   },
+  {
+    // Scripts de desenvolvimento (rodam em Node, fora do produto): console ok.
+    files: ['scripts/**/*.mjs'],
+    languageOptions: {
+      globals: { console: 'readonly', process: 'readonly', fetch: 'readonly' },
+    },
+    rules: { 'no-console': 'off' },
+  },
 );

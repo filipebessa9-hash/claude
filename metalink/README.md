@@ -68,6 +68,16 @@ pnpm test:rls    # testes de autorização RLS contra Postgres real (Docker)
 
 Os testes de RLS provam no banco que: paciente só acessa os próprios dados; médico só lê dados de paciente com vínculo **ativo** e consentimento **vigente**; a trilha de consentimento é imutável; ninguém escala o próprio papel; acessos de médico são auditáveis.
 
+### Smoke test de ponta a ponta
+
+Com o Supabase local rodando (`supabase start` + `supabase db reset`):
+
+```bash
+SUPABASE_ANON_KEY=<anon key do supabase start> node scripts/e2e-smoke.mjs
+```
+
+O script percorre, via API real (GoTrue + PostgREST + RLS), os fluxos de todas as fatias: cadastro com consentimento, registro de dose/peso/sintoma/check-in, convite → preview → resgate → acesso do médico, auditoria, exportação LGPD, revogação e exclusão de conta — 21 verificações.
+
 ## Teste manual da Fatia 0
 
 1. Suba o Supabase local e o painel web (acima).
