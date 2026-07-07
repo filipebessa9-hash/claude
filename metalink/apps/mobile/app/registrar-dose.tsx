@@ -24,6 +24,7 @@ import {
 } from 'react-native';
 
 import { fetchMedications, fetchRecentDoses, insertDose } from '@/lib/doses';
+import { rescheduleDoseReminderIfEnabled } from '@/lib/reminder-sync';
 
 type DayOffset = 0 | 1 | 2;
 const DAY_OPTIONS: { offset: DayOffset; label: string }[] = [
@@ -117,6 +118,8 @@ export default function RegistrarDoseScreen() {
         injectionSite: site,
         notes: notes.trim() === '' ? null : notes.trim(),
       });
+      // Nova dose muda a previsão da próxima: reagenda o lembrete (se ativo).
+      rescheduleDoseReminderIfEnabled().catch(() => undefined);
       router.back();
     } catch {
       setError('Não foi possível salvar. Tente novamente.');

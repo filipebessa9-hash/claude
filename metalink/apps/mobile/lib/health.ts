@@ -85,6 +85,19 @@ export async function fetchCheckin(checkinDate: string): Promise<DailyCheckin | 
   return (data as DailyCheckin | null) ?? null;
 }
 
+export async function fetchRecentCheckins(days: number): Promise<DailyCheckin[]> {
+  const since = new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+  const { data, error } = await supabase
+    .from('daily_checkins')
+    .select('*')
+    .gte('checkin_date', since)
+    .order('checkin_date', { ascending: false });
+  if (error) {
+    throw error;
+  }
+  return (data ?? []) as DailyCheckin[];
+}
+
 export interface CheckinInput {
   checkinDate: string;
   hunger: number | null;

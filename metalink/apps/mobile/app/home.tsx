@@ -130,6 +130,22 @@ export default function HomeScreen() {
                 <Text style={styles.actionButtonText}>Nível</Text>
               </Pressable>
             </View>
+            <View style={styles.actionsRow}>
+              <Pressable
+                style={styles.linkButton}
+                onPress={() => router.push('/resumo')}
+                accessibilityRole="button"
+              >
+                <Text style={styles.linkButtonText}>Resumo da semana</Text>
+              </Pressable>
+              <Pressable
+                style={styles.linkButton}
+                onPress={() => router.push('/lembretes')}
+                accessibilityRole="button"
+              >
+                <Text style={styles.linkButtonText}>Lembretes</Text>
+              </Pressable>
+            </View>
             <Pressable
               style={styles.linkButton}
               onPress={() => router.push('/medico')}
@@ -190,6 +206,7 @@ const styles = StyleSheet.create({
   },
   actionButtonText: { color: '#0f6e5c', fontSize: 15, fontWeight: '600' },
   linkButton: {
+    flex: 1,
     borderWidth: 1,
     borderColor: '#d1d5db',
     borderRadius: 10,
