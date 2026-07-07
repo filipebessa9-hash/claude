@@ -1,0 +1,23 @@
+node_modules/
+dist/
+build/
+coverage/
+
+# Next.js
+.next/
+next-env.d.ts
+
+# Expo
+.expo/
+expo-env.d.ts
+*.orig.*
+web-build/
+
+# Env — nunca commitar segredos
+.env
+.env.local
+.env.*.local
+
+# SO / editor
+.DS_Store
+*.log
