@@ -98,3 +98,11 @@ Os testes de RLS provam no banco que: paciente só acessa os próprios dados; m�
 3. Toque em **“Autorizar e vincular”** — a tela de consentimento explica o que será compartilhado. Após confirmar, o vínculo aparece como ativo.
 4. Recarregue o painel web: o paciente aparece em **“Pacientes vinculados”** e o código consta como usado (1/1). Reusar o mesmo código falha (“já foi utilizado”).
 5. No app, toque em **“Revogar acesso”** e confirme: o painel web deixa de listar/exibir os dados do paciente imediatamente.
+
+## Teste manual da Fatia 4 (painel do médico + relatório)
+
+1. Com um paciente vinculado que tenha registros (doses, pesos, sintomas, check-ins), clique no nome dele no painel web.
+2. A visão 1-clique mostra: **sinais para atenção** (se houver — ex.: registre 3 vômitos na semana ou pule 2 doses no app para vê-los), curva de peso, **aderência** (esperadas × registradas, com lacuna atual), tabela de doses, sintomas e agregado de check-ins.
+3. Clique em **“Baixar relatório de consulta (PDF)”**: o PDF traz as mesmas seções + rodapé de confidencialidade.
+4. Auditoria: no Supabase Studio, confira em `audit_logs` os eventos `view_patient_dashboard` e `export_consultation_report` com o médico como ator.
+5. Sem vínculo/consentimento, a URL do paciente responde 404 e o PDF não é gerado (RLS).

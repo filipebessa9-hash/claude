@@ -22,3 +22,7 @@ Formato: data — decisão (1-2 linhas).
 - 2026-07-07 — (Fatia 3) Código de convite: 8 hex de gen_random_uuid() (32 bits) — suficiente porque expira, tem max_uses e o resgate ainda exige consentimento; normalização espelhada (SQL + core) corrige O→0 e I/L→1.
 - 2026-07-07 — (Fatia 3) Consentimento provider_sharing é global do paciente (registrado no resgate); revogar um médico específico = revogar o vínculo (status revoked). Revogação total de compartilhamento (consent false) ficará na tela LGPD da Fatia 7.
 - 2026-07-07 — (Fatia 3) Preview antes do resgate: o paciente vê nome/CRM de quem convida antes de consentir (decisão informada, LGPD).
+- 2026-07-07 — (Fatia 4) Aderência inferida dos próprios registros (âncora = primeira dose do período; intervalo pela via do medicamento; tolerância semanal ±1d, diária ±12h) — sem prescrição estruturada no MVP. Sem doses no período → "sem dados", nunca 0%.
+- 2026-07-07 — (Fatia 4) Thresholds das flags (ASSUMPTION, a calibrar): perda ≥4%/30d, ganho ≥3%/30d, sintoma intenso no período, vômitos ≥3/7d, ≥2 doses esperadas sem registro. Texto neutro; painel e PDF dizem explicitamente que não é diagnóstico.
+- 2026-07-07 — (Fatia 4) Todo acesso do médico (painel e export PDF) chama log_patient_access() server-side; falha de auditoria não derruba a página nem loga dados do paciente.
+- 2026-07-07 — (Fatia 4) PDF com @react-pdf/renderer em route handler Node (renderToBuffer): determinístico e sem Chromium headless no servidor.
