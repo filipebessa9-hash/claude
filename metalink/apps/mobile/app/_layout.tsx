@@ -12,6 +12,7 @@ export default function RootLayout() {
         <Stack.Screen name="entrar" options={{ title: 'Entrar' }} />
         <Stack.Screen name="criar-conta" options={{ title: 'Criar conta' }} />
         <Stack.Screen name="home" options={{ title: 'MetaLink' }} />
+        <Stack.Screen name="registrar-dose" options={{ title: 'Registrar dose' }} />
       </Stack>
     </AuthProvider>
   );
