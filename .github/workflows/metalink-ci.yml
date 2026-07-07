@@ -1,0 +1,51 @@
+name: MetaLink CI
+
+on:
+  push:
+    paths:
+      - 'metalink/**'
+      - '.github/workflows/metalink-ci.yml'
+  pull_request:
+    paths:
+      - 'metalink/**'
+      - '.github/workflows/metalink-ci.yml'
+
+defaults:
+  run:
+    working-directory: metalink
+
+jobs:
+  checks:
+    name: Lint, typecheck e testes unitários
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          package_json_file: metalink/package.json
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: metalink/pnpm-lock.yaml
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm lint
+      - run: pnpm format:check
+      - run: pnpm typecheck
+      - run: pnpm test
+
+  rls:
+    name: Testes de RLS (Postgres em Docker)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          package_json_file: metalink/package.json
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: metalink/pnpm-lock.yaml
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm test:rls
