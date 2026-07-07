@@ -113,3 +113,12 @@ Os testes de RLS provam no banco que: paciente só acessa os próprios dados; m�
 2. O disclaimer educativo obrigatório aparece na tela — o mesmo texto exigido pela Seção 6 do CLAUDE.md.
 3. No painel web do paciente e no PDF, a seção “Nível estimado de medicação” traz o mesmo número relativo e o mesmo disclaimer.
 4. Sem doses, as três superfícies mostram estado vazio (“sem estimativa”), nunca 0% enganoso.
+
+## Teste manual da Fatia 6 (lembretes e resumo semanal)
+
+1. No app, abra **“Lembretes”** e ative o lembrete de dose (conceda a permissão de notificações). A tela mostra o próximo lembrete, calculado da última dose + esquema (semanal/diário), no horário escolhido (8h/14h/20h).
+2. Registre uma nova dose: o lembrete é reagendado automaticamente para o próximo ciclo.
+3. Ative o **resumo semanal**: um aviso recorrente fica agendado para domingo às 18h.
+4. Confira que as notificações exibem apenas texto genérico — sem medicamento, dose ou peso (LGPD/tela bloqueada).
+5. Abra **“Resumo da semana”**: doses registradas × esperadas, último peso e variação, sintomas (com aviso gentil se houve intensos) e dias com check-in — em tom encorajador, sem cobrança.
+   Nota: em builds de desenvolvimento no Expo Go, notificações locais funcionam; para produção use um development build/EAS.

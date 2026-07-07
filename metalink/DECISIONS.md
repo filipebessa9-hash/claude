@@ -29,3 +29,6 @@ Formato: data — decisão (1-2 linhas).
 - 2026-07-07 — (Fatia 5) Nível estimado exibido como % do pico dos últimos 30 dias, nunca em mg: evita falsa precisão clínica num modelo educativo de compartimento único (soma de decaimentos 2^(-Δt/meia-vida)).
 - 2026-07-07 — (Fatia 5) Curva calculada só para o medicamento da dose mais recente (ASSUMPTION); troca de princípio ativo zera a curva anterior — comportamento aceitável para o MVP.
 - 2026-07-07 — (Fatia 5) Gráficos de série temporal unificados em buildSeriesChartPoints (core/chart.ts); peso e PK delegam ao mesmo helper.
+- 2026-07-07 — (Fatia 6) Lembretes 100% locais (expo-notifications), sem infra de push no MVP: lembrete de dose é one-shot reagendado a cada dose salva/ajuste de configuração; resumo semanal é gatilho recorrente (domingo 18h). Limitação aceita: sem abrir o app após o lembrete disparar, o ciclo seguinte só é agendado no próximo uso.
+- 2026-07-07 — (Fatia 6) Texto das notificações nunca contém dados de saúde (aparece em tela bloqueada) — só um convite genérico para abrir o app (Seção 7).
+- 2026-07-07 — (Fatia 6) Configurações de lembrete ficam em AsyncStorage no aparelho (não no banco): são preferências do dispositivo, não dados clínicos.
