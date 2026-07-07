@@ -1,0 +1,21 @@
+{
+  "name": "@metalink/db",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "scripts": {
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@metalink/core": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/pg": "^8.15.2",
+    "pg": "^8.16.0",
+    "typescript": "^5.8.3",
+    "vitest": "^3.1.4"
+  }
+}
