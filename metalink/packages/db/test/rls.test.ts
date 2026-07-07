@@ -206,4 +206,51 @@ suite('Row Level Security', () => {
     );
     expect(rows.length).toBeGreaterThanOrEqual(7);
   });
+
+  it('peso e check-in: dono escreve e lê; outro paciente não vê; médico vinculado só lê', async () => {
+    // Paciente A registra peso e faz upsert do check-in de hoje (fluxo da Fatia 2).
+    await asUser(patientA, (c) =>
+      c.query(
+        'insert into weight_logs (patient_id, weight_kg, measured_at) values ($1, 90.5, now())',
+        [patientA],
+      ),
+    );
+    await asUser(patientA, (c) =>
+      c.query(
+        `insert into daily_checkins (patient_id, checkin_date, hunger) values ($1, current_date, 4)
+           on conflict (patient_id, checkin_date) do update set hunger = 4`,
+        [patientA],
+      ),
+    );
+
+    const asOtherPatient = await asUser(
+      patientB,
+      async (c) => (await c.query('select * from weight_logs')).rows,
+    );
+    expect(asOtherPatient).toHaveLength(0);
+
+    // Médico com vínculo ativo + consentimento (restaurado acima) lê os dois.
+    const weights = await asUser(
+      provider,
+      async (c) => (await c.query('select patient_id from weight_logs')).rows,
+    );
+    expect(weights).toHaveLength(1);
+    expect(weights[0].patient_id).toBe(patientA);
+    const checkins = await asUser(
+      provider,
+      async (c) => (await c.query('select hunger from daily_checkins')).rows,
+    );
+    expect(checkins).toHaveLength(1);
+    expect(checkins[0].hunger).toBe(4);
+
+    // ...mas não escreve.
+    await expect(
+      asUser(provider, (c) =>
+        c.query(
+          'insert into weight_logs (patient_id, weight_kg, measured_at) values ($1, 80, now())',
+          [patientA],
+        ),
+      ),
+    ).rejects.toThrow(/row-level security/);
+  });
 });
