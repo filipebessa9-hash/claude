@@ -26,3 +26,6 @@ Formato: data — decisão (1-2 linhas).
 - 2026-07-07 — (Fatia 4) Thresholds das flags (ASSUMPTION, a calibrar): perda ≥4%/30d, ganho ≥3%/30d, sintoma intenso no período, vômitos ≥3/7d, ≥2 doses esperadas sem registro. Texto neutro; painel e PDF dizem explicitamente que não é diagnóstico.
 - 2026-07-07 — (Fatia 4) Todo acesso do médico (painel e export PDF) chama log_patient_access() server-side; falha de auditoria não derruba a página nem loga dados do paciente.
 - 2026-07-07 — (Fatia 4) PDF com @react-pdf/renderer em route handler Node (renderToBuffer): determinístico e sem Chromium headless no servidor.
+- 2026-07-07 — (Fatia 5) Nível estimado exibido como % do pico dos últimos 30 dias, nunca em mg: evita falsa precisão clínica num modelo educativo de compartimento único (soma de decaimentos 2^(-Δt/meia-vida)).
+- 2026-07-07 — (Fatia 5) Curva calculada só para o medicamento da dose mais recente (ASSUMPTION); troca de princípio ativo zera a curva anterior — comportamento aceitável para o MVP.
+- 2026-07-07 — (Fatia 5) Gráficos de série temporal unificados em buildSeriesChartPoints (core/chart.ts); peso e PK delegam ao mesmo helper.

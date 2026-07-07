@@ -106,3 +106,10 @@ Os testes de RLS provam no banco que: paciente só acessa os próprios dados; m�
 3. Clique em **“Baixar relatório de consulta (PDF)”**: o PDF traz as mesmas seções + rodapé de confidencialidade.
 4. Auditoria: no Supabase Studio, confira em `audit_logs` os eventos `view_patient_dashboard` e `export_consultation_report` com o médico como ator.
 5. Sem vínculo/consentimento, a URL do paciente responde 404 e o PDF não é gerado (RLS).
+
+## Teste manual da Fatia 5 (nível estimado de medicação)
+
+1. No app, com doses registradas, abra **“Nível”** na home: a curva dos últimos 30 dias sobe a cada dose e decai pela meia-vida do princípio ativo; o valor atual aparece como % do pico do período (nunca em mg).
+2. O disclaimer educativo obrigatório aparece na tela — o mesmo texto exigido pela Seção 6 do CLAUDE.md.
+3. No painel web do paciente e no PDF, a seção “Nível estimado de medicação” traz o mesmo número relativo e o mesmo disclaimer.
+4. Sem doses, as três superfícies mostram estado vazio (“sem estimativa”), nunca 0% enganoso.
