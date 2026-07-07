@@ -36,6 +36,13 @@ export function formatTimeHHMM(date: Date): string {
   return `${hh}:${mm}`;
 }
 
+/** "AAAA-MM-DD" no fuso local — formato de `daily_checkins.checkin_date`. */
+export function toLocalDateString(date: Date): string {
+  const mm = String(date.getMonth() + 1).padStart(2, '0');
+  const dd = String(date.getDate()).padStart(2, '0');
+  return `${date.getFullYear()}-${mm}-${dd}`;
+}
+
 /** "Hoje", "Ontem" ou "dd/mm/aaaa", relativo a `now` (fuso local). */
 export function formatRelativeDay(date: Date, now: Date): string {
   const startOfDay = (d: Date) => new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();

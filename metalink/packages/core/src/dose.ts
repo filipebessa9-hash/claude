@@ -3,6 +3,7 @@
 // torno de pré-preencher a próxima dose a partir da última registrada.
 
 import { suggestNextInjectionSite } from './injection-rotation';
+import { formatPtBrDecimal, parsePtBrDecimal } from './number';
 import type { InjectionSite } from './types';
 
 /** Limite de sanidade da UI; o banco só exige dose > 0. */
@@ -13,12 +14,7 @@ export const MAX_DOSE_MG = 100;
  * Retorna null para entrada inválida.
  */
 export function parseDoseInput(text: string): number | null {
-  const normalized = text.trim().replace(',', '.');
-  if (normalized === '' || !/^\d+(\.\d+)?$/.test(normalized)) {
-    return null;
-  }
-  const value = Number(normalized);
-  return Number.isFinite(value) ? value : null;
+  return parsePtBrDecimal(text);
 }
 
 export function isValidDoseMg(value: number): boolean {
@@ -59,5 +55,5 @@ export function buildDosePrefill(lastDose: LastDoseSummary | null): DosePrefill 
 
 /** Formata a dose para exibição pt-BR (vírgula decimal, sem zeros à direita). */
 export function formatDoseMg(value: number): string {
-  return `${String(value).replace('.', ',')} mg`;
+  return `${formatPtBrDecimal(value)} mg`;
 }
