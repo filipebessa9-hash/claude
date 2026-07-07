@@ -123,6 +123,13 @@ export default function HomeScreen() {
                 <Text style={styles.actionButtonText}>Check-in</Text>
               </Pressable>
             </View>
+            <Pressable
+              style={styles.linkButton}
+              onPress={() => router.push('/medico')}
+              accessibilityRole="button"
+            >
+              <Text style={styles.linkButtonText}>Meu médico</Text>
+            </Pressable>
             {error && <Text style={styles.error}>{error}</Text>}
             {doses !== null && doses.length > 0 && (
               <Text style={styles.sectionTitle}>Suas aplicações</Text>
@@ -175,6 +182,16 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   actionButtonText: { color: '#0f6e5c', fontSize: 15, fontWeight: '600' },
+  linkButton: {
+    borderWidth: 1,
+    borderColor: '#d1d5db',
+    borderRadius: 10,
+    paddingVertical: 12,
+    alignItems: 'center',
+    minHeight: 48,
+    justifyContent: 'center',
+  },
+  linkButtonText: { color: '#1a1a2e', fontSize: 15, fontWeight: '500' },
   sectionTitle: { fontSize: 15, fontWeight: '600', color: '#6b7280', marginTop: 8 },
   doseCard: {
     borderWidth: 1,
