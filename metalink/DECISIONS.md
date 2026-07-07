@@ -16,3 +16,5 @@ Formato: data — decisão (1-2 linhas).
 - 2026-07-07 — (Fatia 1) Registro de dose grava `taken_at = dia (Hoje/Ontem/Anteontem) + HH:MM` em vez de datetime picker nativo: zero dependência extra, cobre o caso real ("esqueci de registrar ontem") e mantém o fluxo recorrente em ~3 toques. Datas mais antigas ficam para edição de histórico (fatia futura).
 - 2026-07-07 — (Fatia 1) Pré-preenchimento vem do último `dose_log` (medicamento, dose, próximo local do ciclo), não de `patient_medications`; o esquema ativo do paciente entra na fatia de aderência, onde é de fato necessário.
 - 2026-07-07 — (Fatia 1) Mobile acessa o Supabase direto do cliente (padrão Supabase), confiando no RLS testado por integração; sem camada de API própria por ora.
+- 2026-07-07 — (Fatia 2) Gráfico de tendência de peso desenhado com react-native-svg + função pura em @metalink/core (buildWeightChartPoints), em vez de lib de gráficos: zero config, testável por unidade, e a mesma função servirá ao painel web.
+- 2026-07-07 — (Fatia 2) Check-in diário é upsert por (patient_id, checkin_date) no fuso local do aparelho; tocar de novo no mesmo valor desmarca (tudo opcional, sem obrigação de completar).

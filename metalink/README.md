@@ -82,3 +82,11 @@ Os testes de RLS provam no banco que: paciente só acessa os próprios dados; m�
 3. De volta à home, a dose aparece no histórico (“Hoje às …”), com pull-to-refresh.
 4. Registre uma segunda dose: a tela vem **pré-preenchida** com o último medicamento e dose, e o local sugerido avança no ciclo — o fluxo recorrente leva ~3 toques (< 15 s).
 5. Valide os erros: dose vazia/inválida, horário no futuro e HH:MM malformado são bloqueados com mensagens em pt-BR.
+
+## Teste manual da Fatia 2 (peso, sintomas e check-in)
+
+1. Na home, use a linha de ações: **Peso**, **Sintomas** e **Check-in**.
+2. Em Peso, registre alguns pesos (inclusive "Ontem"/"Anteontem"): o gráfico de tendência aparece a partir de 2 registros, com cards de "Último registro", "Desde o início" e (com dados de 30+ dias) "Últimos 30 dias".
+3. Em Sintomas, registre um efeito colateral (tipo + intensidade + quando): ele entra na linha do tempo.
+4. Em Check-in, responda o que quiser (tudo opcional) e salve; reabra no mesmo dia e confira que os valores voltam preenchidos (1 check-in por dia, atualizável).
+5. Faixas inválidas são bloqueadas (peso fora de 20–400 kg, horário no futuro).
