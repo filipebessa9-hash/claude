@@ -150,3 +150,15 @@ svg.chart {
   border-radius: 8px;
   background: #fff;
 }
+
+.consent-row {
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.consent-row input {
+  margin-top: 0.2rem;
+}

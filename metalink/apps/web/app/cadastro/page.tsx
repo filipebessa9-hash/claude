@@ -13,6 +13,7 @@ export default function CadastroPage() {
   const [crm, setCrm] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [accepted, setAccepted] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [done, setDone] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -20,13 +21,17 @@ export default function CadastroPage() {
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
     setError(null);
+    if (!accepted) {
+      setError('Para criar a conta, aceite os Termos de Uso e a Política de Privacidade.');
+      return;
+    }
     setLoading(true);
     const supabase = createClient();
     const { error: signUpError } = await supabase.auth.signUp({
       email,
       password,
       options: {
-        data: { role: 'provider', full_name: fullName, crm },
+        data: { role: 'provider', full_name: fullName, crm, accepted_terms: 'true' },
       },
     });
     setLoading(false);
@@ -81,6 +86,17 @@ export default function CadastroPage() {
             minLength={8}
             required
           />
+        </label>
+        <label className="consent-row">
+          <input
+            type="checkbox"
+            checked={accepted}
+            onChange={(e) => setAccepted(e.target.checked)}
+          />
+          <span>
+            Li e aceito os <Link href="/termos">Termos de Uso</Link> e a{' '}
+            <Link href="/privacidade">Política de Privacidade</Link>.
+          </span>
         </label>
         {error && <p className="error">{error}</p>}
         <button type="submit" disabled={loading}>
