@@ -100,6 +100,29 @@ export default function HomeScreen() {
             >
               <Text style={styles.registerButtonText}>+ Registrar dose</Text>
             </Pressable>
+            <View style={styles.actionsRow}>
+              <Pressable
+                style={styles.actionButton}
+                onPress={() => router.push('/peso')}
+                accessibilityRole="button"
+              >
+                <Text style={styles.actionButtonText}>Peso</Text>
+              </Pressable>
+              <Pressable
+                style={styles.actionButton}
+                onPress={() => router.push('/sintomas')}
+                accessibilityRole="button"
+              >
+                <Text style={styles.actionButtonText}>Sintomas</Text>
+              </Pressable>
+              <Pressable
+                style={styles.actionButton}
+                onPress={() => router.push('/check-in')}
+                accessibilityRole="button"
+              >
+                <Text style={styles.actionButtonText}>Check-in</Text>
+              </Pressable>
+            </View>
             {error && <Text style={styles.error}>{error}</Text>}
             {doses !== null && doses.length > 0 && (
               <Text style={styles.sectionTitle}>Suas aplicações</Text>
@@ -140,6 +163,18 @@ const styles = StyleSheet.create({
     minHeight: 56,
   },
   registerButtonText: { color: '#fff', fontSize: 18, fontWeight: '600' },
+  actionsRow: { flexDirection: 'row', gap: 10 },
+  actionButton: {
+    flex: 1,
+    borderWidth: 1,
+    borderColor: '#0f6e5c',
+    borderRadius: 10,
+    paddingVertical: 12,
+    alignItems: 'center',
+    minHeight: 48,
+    justifyContent: 'center',
+  },
+  actionButtonText: { color: '#0f6e5c', fontSize: 15, fontWeight: '600' },
   sectionTitle: { fontSize: 15, fontWeight: '600', color: '#6b7280', marginTop: 8 },
   doseCard: {
     borderWidth: 1,

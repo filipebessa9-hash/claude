@@ -13,6 +13,11 @@ export default function RootLayout() {
         <Stack.Screen name="criar-conta" options={{ title: 'Criar conta' }} />
         <Stack.Screen name="home" options={{ title: 'MetaLink' }} />
         <Stack.Screen name="registrar-dose" options={{ title: 'Registrar dose' }} />
+        <Stack.Screen name="peso" options={{ title: 'Peso' }} />
+        <Stack.Screen name="registrar-peso" options={{ title: 'Registrar peso' }} />
+        <Stack.Screen name="sintomas" options={{ title: 'Sintomas' }} />
+        <Stack.Screen name="registrar-sintoma" options={{ title: 'Registrar sintoma' }} />
+        <Stack.Screen name="check-in" options={{ title: 'Check-in do dia' }} />
       </Stack>
     </AuthProvider>
   );
