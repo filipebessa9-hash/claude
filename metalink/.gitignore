@@ -7,6 +7,9 @@ coverage/
 .next/
 next-env.d.ts
 
+# TypeScript incremental
+*.tsbuildinfo
+
 # Expo
 .expo/
 expo-env.d.ts
