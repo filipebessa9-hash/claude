@@ -10,6 +10,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@expo/metro-runtime": "~5.0.4",
     "@metalink/core": "workspace:*",
     "@metalink/db": "workspace:*",
     "@react-native-async-storage/async-storage": "2.1.2",
@@ -23,9 +24,10 @@
     "react": "19.0.0",
     "react-native": "0.79.2",
     "react-native-safe-area-context": "5.4.0",
-    "react-native-svg": "15.11.2",
     "react-native-screens": "~4.10.0",
-    "react-native-url-polyfill": "^2.0.0"
+    "react-native-svg": "15.11.2",
+    "react-native-url-polyfill": "^2.0.0",
+    "react-native-web": "~0.20.0"
   },
   "devDependencies": {
     "@types/react": "~19.0.10",
